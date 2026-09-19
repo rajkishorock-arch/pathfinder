@@ -1,52 +1,59 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, CheckCircle, GraduationCap, Briefcase, Clock, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, ArrowRight, CheckCircle, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import type { OnboardingState } from '@/types';
 import { useAuth } from '@/features/auth';
 import { validateRequired } from '@/utils/validation';
 
+import { careerService } from '@/services/careerService';
+import type { CareerOption } from '@/types';
+
 export const OnboardingWizard: React.FC<{ onComplete?: () => void }> = ({ onComplete }) => {
   const { user, completeOnboarding } = useAuth();
 
+  const [dbCareers, setDbCareers] = useState<CareerOption[]>([]);
   const [formData, setFormData] = useState<OnboardingState>({
     step: 1,
     name: user?.name || '',
     educationLevel: 'undergraduate',
     field: 'computer-science',
-    careerGoalId: 'software-developer',
+    careerGoalId: '',
     availableHoursPerDay: 2,
     experienceLevel: 'beginner',
   });
 
   const [stepError, setStepError] = useState<string | null>(null);
 
-  const careerGoals = [
-    {
-      id: 'software-developer',
-      title: 'Software Developer',
-      desc: 'Build full-stack web applications, REST APIs, and backend architectures.',
-      icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
-    },
-    {
-      id: 'data-scientist',
-      title: 'Data Scientist',
-      desc: 'Analyze data models, train predictive algorithms, and draw insights.',
-      icon: <Sparkles className="w-5 h-5 text-indigo-600" />,
-    },
-    {
-      id: 'devops-engineer',
-      title: 'DevOps / Cloud Engineer',
-      desc: 'Automate CI/CD pipelines, container orchestration, and cloud infrastructure.',
-      icon: <Clock className="w-5 h-5 text-indigo-600" />,
-    },
-    {
-      id: 'frontend-engineer',
-      title: 'Frontend Engineer',
-      desc: 'Craft crisp, accessible user interfaces, animations, and web design systems.',
-      icon: <GraduationCap className="w-5 h-5 text-indigo-600" />,
-    },
-  ];
+  useEffect(() => {
+    async function loadCareers() {
+      const list = await careerService.getCareers();
+      if (list.length > 0) {
+        setDbCareers(list);
+        setFormData((prev) => ({
+          ...prev,
+          careerGoalId: prev.careerGoalId || list[0].id,
+        }));
+      }
+    }
+    loadCareers();
+  }, []);
+
+  const careerGoals = dbCareers.length > 0
+    ? dbCareers.map((c) => ({
+        id: c.id,
+        title: c.title,
+        desc: c.description || 'Target career goal.',
+        icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
+      }))
+    : [
+        {
+          id: '11111111-1111-4111-a111-111111111111',
+          title: 'Software Developer',
+          desc: 'Build full-stack web applications, REST APIs, and backend architectures.',
+          icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
+        },
+      ];
 
   const handleNext = () => {
     setStepError(null);

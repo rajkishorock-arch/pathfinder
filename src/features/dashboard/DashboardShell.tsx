@@ -41,7 +41,7 @@ export const DashboardShell: React.FC = () => {
           <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
             <span className="inline-flex items-center gap-1.5 font-medium text-slate-800">
               <Target className="w-4 h-4 text-indigo-600" />
-              Goal: {user.careerGoalTitle || 'Software Developer'}
+              Goal: {user.careerGoalTitle || 'No career goal selected'}
             </span>
             <span>•</span>
             <span>{user.availableHoursPerDay || 2}h daily learning target</span>

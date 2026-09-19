@@ -99,26 +99,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(updated as UserProfile);
   };
 
-  const completeOnboarding = (onboardingData: OnboardingState) => {
+  const completeOnboarding = async (onboardingData: OnboardingState) => {
     if (!user) return;
-    const updated: UserProfile = {
-      ...user,
-      name: onboardingData.name || user.name,
-      educationLevel: onboardingData.educationLevel,
-      field: onboardingData.field,
-      careerGoalId: onboardingData.careerGoalId,
-      careerGoalTitle: onboardingData.careerGoalId === 'software-developer' ? 'Software Developer' : 'Target Role',
-      availableHoursPerDay: onboardingData.availableHoursPerDay,
-      experienceLevel: onboardingData.experienceLevel,
-      isOnboarded: true,
-    };
 
-    setUser(updated);
+    // 1. Persist onboarding data to Supabase database
+    const { error } = await profileService.upsertOnboarding(user.id, onboardingData);
+    if (error) {
+      console.error('Failed to persist onboarding state to Supabase:', error);
+    }
 
-    // Persist to database asynchronously via RLS profileService
-    profileService.upsertOnboarding(user.id, onboardingData).catch((err) => {
-      console.error('Failed to persist onboarding state to Supabase:', err);
-    });
+    // 2. Fetch authoritative profile from database
+    const refreshedProfile = await profileService.getProfile(user.id);
+    if (refreshedProfile) {
+      setUser(refreshedProfile);
+    } else {
+      setUser({
+        ...user,
+        name: onboardingData.name || user.name,
+        educationLevel: onboardingData.educationLevel,
+        field: onboardingData.field,
+        careerGoalId: onboardingData.careerGoalId,
+        availableHoursPerDay: onboardingData.availableHoursPerDay,
+        experienceLevel: onboardingData.experienceLevel,
+        isOnboarded: true,
+      });
+    }
   };
 
   if (isLoadingSession && isSupabaseConfigured) {

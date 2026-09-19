@@ -56,7 +56,7 @@ export const skillGapService = {
     if (!isSupabaseConfigured) return null;
 
     try {
-      // 1. Determine career ID
+      // 1. Determine career ID strictly from parameter or user profile
       let careerId = targetCareerId;
       if (!careerId) {
         const { data: profile } = await supabase
@@ -64,10 +64,14 @@ export const skillGapService = {
           .select('career_goal_id')
           .eq('id', userId)
           .maybeSingle();
-        careerId = (profile as { career_goal_id: string | null } | null)?.career_goal_id || '11111111-1111-4111-a111-111111111111';
+        careerId = (profile as { career_goal_id: string | null } | null)?.career_goal_id || undefined;
       }
 
-      const activeCareerId = careerId || '11111111-1111-4111-a111-111111111111';
+      if (!careerId) {
+        return null;
+      }
+
+      const activeCareerId = careerId;
 
       // 2. Fetch career details
       const { data: careerData } = await supabase
@@ -76,7 +80,11 @@ export const skillGapService = {
         .eq('id', activeCareerId)
         .maybeSingle();
 
-      const careerTitle = (careerData as CareerRow | null)?.title || 'Software Developer';
+      if (!careerData) {
+        return null;
+      }
+
+      const careerTitle = (careerData as CareerRow).title;
 
       // 3. Fetch required skills for this career
       const { data: csData, error: csError } = await (supabase
@@ -85,7 +93,6 @@ export const skillGapService = {
         .eq('career_id', activeCareerId);
 
       if (csError || !csData || csData.length === 0) {
-        console.warn('No career_skills found for career:', activeCareerId, csError);
         return {
           careerId: activeCareerId,
           careerTitle,

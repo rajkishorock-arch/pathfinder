@@ -62,8 +62,8 @@ export const RoadmapView: React.FC = () => {
         }
         if (isMounted) setHasCompletedAssessment(true);
 
-        // 3. Check active roadmap
-        const activeData = await roadmapService.getActiveRoadmap(user.id);
+        // 3. Check active roadmap matching current career goal
+        const activeData = await roadmapService.getActiveRoadmap(user.id, careerGoalId);
         if (!isMounted) return;
 
         if (activeData && activeData.items.length > 0) {

@@ -28,9 +28,9 @@ type CareerRow = Database['public']['Tables']['careers']['Row'];
 
 export const roadmapService = {
   /**
-   * Get the active roadmap with items for the specified user.
+   * Get the active roadmap with items for the specified user, optionally filtering by targetCareerId.
    */
-  async getActiveRoadmap(userId: string): Promise<RoadmapData | null> {
+  async getActiveRoadmap(userId: string, targetCareerId?: string): Promise<RoadmapData | null> {
     if (!isSupabaseConfigured) return null;
 
     try {
@@ -48,6 +48,11 @@ export const roadmapService = {
       }
 
       const rRow = roadmap as RoadmapRow;
+
+      // If targetCareerId is specified and active roadmap belongs to a different career, return null
+      if (targetCareerId && rRow.career_id !== targetCareerId) {
+        return null;
+      }
 
       // 2. Fetch career title
       let careerTitle = 'Target Career';

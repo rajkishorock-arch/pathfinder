@@ -2,21 +2,21 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import type { UserProfile, OnboardingState } from '@/types';
 import type { Database } from '@/types/database';
 
-type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 
 export const profileService = {
   async getProfile(userId: string): Promise<UserProfile | null> {
     if (!isSupabaseConfigured) return null;
 
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
+      const { data, error } = await (supabase
+        .from('profiles') as any)
+        .select('*, careers:career_goal_id(id, title)')
         .eq('id', userId)
         .maybeSingle();
 
       if (error || !data) return null;
-      const profile = data as ProfileRow;
+      const profile = data as any;
+      const careerTitle = profile.careers?.title || undefined;
 
       return {
         id: profile.id,
@@ -25,7 +25,7 @@ export const profileService = {
         educationLevel: profile.education_level || undefined,
         field: profile.field_of_study || undefined,
         careerGoalId: profile.career_goal_id || undefined,
-        careerGoalTitle: profile.career_goal_id === 'software-developer' ? 'Software Developer' : profile.career_goal_id ? 'Target Role' : undefined,
+        careerGoalTitle: careerTitle,
         availableHoursPerDay: profile.available_learning_minutes ? Math.round(profile.available_learning_minutes / 60) : 2,
         experienceLevel: profile.experience_level || undefined,
         isOnboarded: Boolean(profile.onboarding_completed),
@@ -63,7 +63,7 @@ export const profileService = {
         full_name: data.name,
         education_level: data.educationLevel,
         field_of_study: data.field,
-        career_goal_id: null,
+        career_goal_id: data.careerGoalId || null,
         available_learning_minutes: (data.availableHoursPerDay || 2) * 60,
         experience_level: data.experienceLevel,
         onboarding_completed: true,
