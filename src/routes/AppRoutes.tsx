@@ -22,6 +22,7 @@ import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 import { AssessmentPage } from '@/pages/dashboard/AssessmentPage';
 import { RoadmapPage } from '@/pages/dashboard/RoadmapPage';
 import { DailyLearningPage } from '@/pages/dashboard/DailyLearningPage';
+import { ProgressPage } from '@/pages/dashboard/ProgressPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 import { useAuth } from '@/features/auth';
@@ -86,6 +87,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/dashboard/learning" element={<DailyLearningPage />} />
         <Route path="/dashboard/assessment" element={<AssessmentPage />} />
         <Route path="/dashboard/roadmap" element={<RoadmapPage />} />
+        <Route path="/dashboard/progress" element={<ProgressPage />} />
         <Route path="/dashboard/*" element={<DashboardPage />} />
       </Route>
 

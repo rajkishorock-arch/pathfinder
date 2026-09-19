@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/features/auth';
 import { OnboardingWizard } from '@/features/onboarding/OnboardingWizard';
 import { SkillGapCard } from '@/features/dashboard/SkillGapCard';
-
 import { DailyLearningCard } from '@/features/dashboard/DailyLearningCard';
+import { ProgressCard } from '@/features/dashboard/ProgressCard';
 
 export const DashboardShell: React.FC = () => {
   const { user } = useAuth();
@@ -32,7 +32,7 @@ export const DashboardShell: React.FC = () => {
               Student Dashboard
             </div>
             <Badge variant="indigo" size="sm">
-              Phase 3E Daily Learning Active
+              Phase 4 Progress Active
             </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
@@ -43,8 +43,6 @@ export const DashboardShell: React.FC = () => {
               <Target className="w-4 h-4 text-indigo-600" />
               Goal: {user.careerGoalTitle || 'No career goal selected'}
             </span>
-            <span>•</span>
-            <span>{user.availableHoursPerDay || 2}h daily learning target</span>
           </div>
         </div>
 
@@ -67,9 +65,10 @@ export const DashboardShell: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Column: Skill Gap Card + Quick Actions */}
+        {/* Main Column: Skill Gap Card + Progress Card + Quick Actions */}
         <div className="lg:col-span-2 space-y-6">
           <SkillGapCard />
+          <ProgressCard />
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -125,16 +124,10 @@ export const DashboardShell: React.FC = () => {
                   {user.field?.replace('-', ' ') || 'Computer Science'}
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
+              <div className="flex justify-between py-1">
                 <span className="text-slate-500">Experience Level</span>
                 <span className="font-semibold text-slate-800 capitalize">
                   {user.experienceLevel || 'Beginner'}
-                </span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-slate-500">Daily Learning Target</span>
-                <span className="font-semibold text-slate-800">
-                  {user.availableHoursPerDay || 2} hours/day
                 </span>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Compass, LayoutDashboard, Target, CheckSquare, User, LogOut } from 'lucide-react';
+import { Compass, LayoutDashboard, Target, CheckSquare, TrendingUp, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 
 export const DashboardLayout: React.FC = () => {
@@ -10,7 +10,8 @@ export const DashboardLayout: React.FC = () => {
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { name: 'Roadmap', href: '/dashboard/roadmap', icon: <Target className="w-5 h-5" /> },
-    { name: 'Tasks', href: '/dashboard/tasks', icon: <CheckSquare className="w-5 h-5" /> },
+    { name: 'Tasks', href: '/dashboard/learning', icon: <CheckSquare className="w-5 h-5" /> },
+    { name: 'Progress', href: '/dashboard/progress', icon: <TrendingUp className="w-5 h-5" /> },
     { name: 'Profile', href: '/dashboard/profile', icon: <User className="w-5 h-5" /> },
   ];
 
