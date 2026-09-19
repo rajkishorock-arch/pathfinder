@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /careers
+Allow: /about
+Allow: /how-it-works
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+
+Sitemap: https://example-pathfinder.domain/sitemap.xml
